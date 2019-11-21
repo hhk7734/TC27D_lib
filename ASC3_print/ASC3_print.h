@@ -23,8 +23,15 @@
 
 #pragma once
 
-#define IFX_INTPRIO_ASCLIN3_TX  1
-#define IFX_INTPRIO_ASCLIN3_RX  2
-#define IFX_INTPRIO_ASCLIN3_ER  3
+#include "Ifx_Types.h"
 
-#define IFX_INTPRIO_STM0_SR0 10
+void   ASC3_print_init( uint32 baudrate );
+sint32 ASC3_available( void );
+uint8  ASC3_read( void );
+void   ASC3_read_buf( uint8 *buffer, uint16 size );
+void   ASC3_write( uint8 data );
+void   ASC3_write_buf( uint8 *buffer, uint16 size );
+void   ASC3_print_str( const char *str );
+void   ASC3_print_u32( uint32 data );
+void   ASC3_print_i32( uint32 data );
+void   ASC3_print_f32( float data );
