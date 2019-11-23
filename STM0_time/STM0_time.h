@@ -25,8 +25,7 @@
 
 #include "Ifx_Types.h"
 
-void STM0_time_init( void );
-
+void   STM0_time_init( void );
 uint32 STM0_micros( void );
 uint32 STM0_millis( void );
 void   STM0_delay_us( uint32 us );
