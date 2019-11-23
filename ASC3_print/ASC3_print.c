@@ -27,7 +27,7 @@
 #include <_PinMap/IfxAsclin_PinMap.h>
 #include <Asclin/Asc/IfxAsclin_Asc.h>
 #include <Cpu/Irq/IfxCpu_Irq.h>
-
+#include <math.h>
 
 static IfxAsclin_Asc asc;
 #define ASC_TX_BUFFER_SIZE 64
@@ -95,7 +95,7 @@ uint8 ASC3_read( void )
     return IfxAsclin_Asc_blockingRead( &asc );
 }
 
-void ASC3_read_buf( uint8 *buffer, uint16 size )
+void ASC3_read_buf( uint8 *buffer, Ifx_SizeT size )
 {
     IfxAsclin_Asc_read( &asc, buffer, &size, TIME_INFINITE );
 }
@@ -105,7 +105,7 @@ void ASC3_write( uint8 data )
     IfxAsclin_Asc_blockingWrite( &asc, data );
 }
 
-void ASC3_write_buf( uint8 *buffer, uint16 size )
+void ASC3_write_buf( uint8 *buffer, Ifx_SizeT size )
 {
     IfxAsclin_Asc_write( &asc, buffer, &size, TIME_INFINITE );
 }
@@ -120,12 +120,80 @@ void ASC3_print_str( const char *str )
 
 void ASC3_print_u32( uint32 data )
 {
+    uint32 temp;
+    char   buf[11];
+    char * str = &buf[10];
+    *str       = '\0';
+
+    do
+    {
+        temp           = data / 10;
+        char remainder = ( data - temp * 10 ) + '0';
+        *--str         = remainder;
+        data           = temp;
+    } while( data );
+
+    ASC3_print_str( str );
 }
 
-void ASC3_print_i32( uint32 data )
+void ASC3_print_s32( sint32 data )
 {
+    if( data < 0 )
+    {
+        ASC3_write( '-' );
+        data = -data;
+    }
+
+    ASC3_print_u32( ( uint32 )data );
 }
 
-void ASC3_print_f32( float data )
+void ASC3_print_f32( float data, uint16 digits )
 {
+    if( isnan( data ) )
+    {
+        ASC3_print_str( "nan" );
+        return;
+    }
+    else if( isinf( data ) )
+    {
+        ASC3_print_str( "inf" );
+        return;
+    }
+    else if( data > 4294967040.0 )
+    {
+        ASC3_print_str( "ovf" );
+        return;
+    }
+    else if( data < -4294967040.0 )
+    {
+        ASC3_print_str( "ovf" );
+        return;
+    }
+
+    if( data < 0.0 )
+    {
+        ASC3_write( '-' );
+        data = -data;
+    }
+
+    float rounding = 0.5;
+    for( uint16 i = 0; i < digits; ++i )
+    {
+        rounding /= 10.0;
+    }
+    data += rounding;
+
+    uint32 integer = ( uint32 )data;
+    ASC3_print_u32( integer );
+    ASC3_write( '.' );
+
+    float decimal = data - ( float )integer;
+
+    while( digits-- )
+    {
+        decimal *= 10.0;
+        uint8 to_print = ( uint8 )( decimal );
+        ASC3_write( to_print + '0' );
+        decimal -= to_print;
+    }
 }
