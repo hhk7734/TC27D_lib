@@ -24,12 +24,10 @@
 #include "ASC3_print.h"
 #include "Ifx_IntPrioDef.h"
 
-#include <_PinMap/IfxAsclin_PinMap.h>
-#include <Asclin/Asc/IfxAsclin_Asc.h>
 #include <Cpu/Irq/IfxCpu_Irq.h>
 #include <math.h>
 
-static IfxAsclin_Asc asc;
+IfxAsclin_Asc asc;
 #define ASC_TX_BUFFER_SIZE 64
 static uint8 ascTxBuffer[ASC_TX_BUFFER_SIZE + sizeof( Ifx_Fifo ) + 8];
 #define ASC_RX_BUFFER_SIZE 64
@@ -83,31 +81,6 @@ void ASC3_print_init( uint32 baudrate )
             IfxPort_PadDriver_cmosAutomotiveSpeed1 };
     ascConfig.pins = &pins;
     IfxAsclin_Asc_initModule( &asc, &ascConfig );
-}
-
-sint32 ASC3_available( void )
-{
-    return IfxAsclin_Asc_getReadCount( &asc );
-}
-
-uint8 ASC3_read( void )
-{
-    return IfxAsclin_Asc_blockingRead( &asc );
-}
-
-void ASC3_read_buf( uint8 *buffer, Ifx_SizeT size )
-{
-    IfxAsclin_Asc_read( &asc, buffer, &size, TIME_INFINITE );
-}
-
-void ASC3_write( uint8 data )
-{
-    IfxAsclin_Asc_blockingWrite( &asc, data );
-}
-
-void ASC3_write_buf( uint8 *buffer, Ifx_SizeT size )
-{
-    IfxAsclin_Asc_write( &asc, buffer, &size, TIME_INFINITE );
 }
 
 void ASC3_print_str( const char *str )
