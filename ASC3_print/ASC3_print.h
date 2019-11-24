@@ -25,13 +25,38 @@
 
 #include "Ifx_Types.h"
 
-void   ASC3_print_init( uint32 baudrate );
-sint32 ASC3_available( void );
-uint8  ASC3_read( void );
-void   ASC3_read_buf( uint8 *buffer, Ifx_SizeT size );
-void   ASC3_write( uint8 data );
-void   ASC3_write_buf( uint8 *buffer, Ifx_SizeT size );
-void   ASC3_print_str( const char *str );
-void   ASC3_print_u32( uint32 data );
-void   ASC3_print_s32( sint32 data );
-void   ASC3_print_f32( float data, uint16 digits );
+#include <_PinMap/IfxAsclin_PinMap.h>
+#include <Asclin/Asc/IfxAsclin_Asc.h>
+
+extern IfxAsclin_Asc asc;
+
+void ASC3_print_init( uint32 baudrate );
+void ASC3_print_str( const char *str );
+void ASC3_print_u32( uint32 data );
+void ASC3_print_s32( sint32 data );
+void ASC3_print_f32( float data, uint16 digits );
+
+static inline sint32 ASC3_available( void )
+{
+    return IfxAsclin_Asc_getReadCount( &asc );
+}
+
+static inline uint8 ASC3_read( void )
+{
+    return IfxAsclin_Asc_blockingRead( &asc );
+}
+
+static inline void ASC3_read_buf( uint8 *buffer, Ifx_SizeT size )
+{
+    IfxAsclin_Asc_read( &asc, buffer, &size, TIME_INFINITE );
+}
+
+static inline void ASC3_write( uint8 data )
+{
+    IfxAsclin_Asc_blockingWrite( &asc, data );
+}
+
+static inline void ASC3_write_buf( uint8 *buffer, Ifx_SizeT size )
+{
+    IfxAsclin_Asc_write( &asc, buffer, &size, TIME_INFINITE );
+}
