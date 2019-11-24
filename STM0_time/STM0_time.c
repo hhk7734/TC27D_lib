@@ -55,7 +55,6 @@ void STM0_time_init( void )
     IfxStm_initCompare( stmSfr, &stmConfig );
 }
 
-
 uint32 STM0_micros( void )
 {
     return micros_tick;
@@ -65,6 +64,7 @@ uint32 STM0_millis( void )
 {
     return millis_tick;
 }
+
 void STM0_delay_us( uint32 us )
 {
     if( us > 0 )
