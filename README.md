@@ -16,13 +16,13 @@ If not, a building may fail because the new directory path wasn't registered in 
 
 ## Usage
 
-### ASC3 example
+### Shell on Cpu0
 
 ```c
 #include "Ifx_Types.h"
 #include "IfxCpu.h"
 #include "IfxScuWdt.h"
-#include "ASC3_print.h"
+#include "shell_interface.h"
 
 IfxCpu_syncEvent cpuSyncEvent = 0;
 
@@ -40,17 +40,11 @@ int core0_main( void )
     IfxCpu_emitEvent( &cpuSyncEvent );
     IfxCpu_waitEvent( &cpuSyncEvent, 1 );
 
-    ASC3_print_init( 9600 );
-
-    ASC3_print_str( "Hello World\r\n" );
+    shell_init();
 
     while( 1 )
     {
-        // Echo
-        if( ASC3_available() > 0 )
-        {
-            ASC3_write( ASC3_read() );
-        }
+        shell_run();
     }
     return ( 1 );
 }
