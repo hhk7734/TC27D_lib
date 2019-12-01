@@ -105,7 +105,8 @@ void shell_init( void )
 
     Ifx_Shell_init( &shell_interface.shell, &shell_config );
 
-    Ifx_Console_print( ENDL "Enter 'help' to see the available commands" ENDL );
+    Ifx_Console_print( "Enter 'help' to see the available commands" ENDL
+                           IFX_CFG_SHELL_PROMPT );
 }
 
 void shell_run( void )
