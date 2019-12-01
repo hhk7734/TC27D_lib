@@ -23,40 +23,28 @@
 
 #pragma once
 
-#include "Ifx_Types.h"
+#include "IfxAsclin_Asc.h"
+#include "Ifx_Shell.h"
+#include "Ifx_Console.h"
 
-#include <_PinMap/IfxAsclin_PinMap.h>
-#include <Asclin/Asc/IfxAsclin_Asc.h>
+#define SHELL_ASC_TX_BUFFER_SIZE 2048
+#define SHELL_ASC_RX_BUFFER_SIZE 512
 
-extern IfxAsclin_Asc asc;
+#define SHELL_ASC_BAUDRATE 115200
 
-void ASC3_print_init( uint32 baudrate );
-void ASC3_print_str( const char *str );
-void ASC3_print_u32( uint32 data );
-void ASC3_print_s32( sint32 data );
-void ASC3_print_f32( float data, uint16 digits );
-
-static inline sint32 ASC3_available( void )
+typedef struct
 {
-    return IfxAsclin_Asc_getReadCount( &asc );
-}
+    uint8 tx[SHELL_ASC_TX_BUFFER_SIZE + sizeof( Ifx_Fifo ) + 8];
+    uint8 rx[SHELL_ASC_RX_BUFFER_SIZE + sizeof( Ifx_Fifo ) + 8];
+} shell_asc_buffer_t;
 
-static inline uint8 ASC3_read( void )
+typedef struct
 {
-    return IfxAsclin_Asc_blockingRead( &asc );
-}
+    shell_asc_buffer_t buffer;
+    IfxAsclin_Asc      asc;
+    IfxStdIf_DPipe     dpipe;
+    Ifx_Shell          shell;
+} shell_interface_t;
 
-static inline void ASC3_read_buf( uint8 *buffer, Ifx_SizeT size )
-{
-    IfxAsclin_Asc_read( &asc, buffer, &size, TIME_INFINITE );
-}
-
-static inline void ASC3_write( uint8 data )
-{
-    IfxAsclin_Asc_blockingWrite( &asc, data );
-}
-
-static inline void ASC3_write_buf( uint8 *buffer, Ifx_SizeT size )
-{
-    IfxAsclin_Asc_write( &asc, buffer, &size, TIME_INFINITE );
-}
+void shell_init( void );
+void shell_run( void );
